@@ -6,12 +6,10 @@
 ```bash
 docker build -t local/dstu-pandoc .
 
-git clone https://github.com/vangaa/markdown-dstu-3008-95
-cd markdown-dstu-3008-95
-chmod +x install.sh && ./install.sh
-
-~/.markdown-dstu-builder/md2dstu -h
+./md2dstu -c -b bibliography.bib -t title.tex -o example1.pdf -v main.md
 ```
+
+Пути указываются относительно /input_files
 
 ## Примеры страниц
 
