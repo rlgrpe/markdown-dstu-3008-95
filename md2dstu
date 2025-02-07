@@ -2,7 +2,7 @@
 
 show_help() {
 cat << EOF
-Usage: $md2dstu [-hvc] [-o OUTPUT_PDF] [-b BIBLIOGRAPHY] [-t TITLE_TEX] MARKDOWN_FILE
+Usage: $0 [-hvc] [-o OUTPUT_PDF] [-b BIBLIOGRAPHY] [-t TITLE_TEX] MARKDOWN_FILE
 Compile .md files to DSTU looking pdf docs
     -h          display this help and exit
     -v          verbose mode
@@ -13,7 +13,6 @@ Compile .md files to DSTU looking pdf docs
 EOF
 }
 
-
 MD_FILE=
 TITLE_TEX=
 BIBLIOGRAPHY=
@@ -22,9 +21,6 @@ VERBOSE=0
 OUT_PDF=out.pdf
 
 OPTIND=1
-# Resetting OPTIND is necessary if getopts was used previously in the script.
-# It is a good idea to make OPTIND local if you process options in a function.
-
 while getopts vhcb:o:t: opt; do
     case $opt in
         h)
@@ -47,40 +43,30 @@ while getopts vhcb:o:t: opt; do
             ;;
     esac
 done
-shift "$((OPTIND-1))"   # Discard the options and sentinel --
+shift "$((OPTIND-1))"
 
-
-if [ $# -eq 1 ]
-then
+if [ $# -eq 1 ]; then
     MD_FILE=$1
 else
     show_help
     exit 0
 fi
 
-if [ -z $BIBLIOGRAPHY ]
-then
-    BIBLIOGRAPHY=
-else
+if [ -n "$BIBLIOGRAPHY" ]; then
     BIBLIOGRAPHY="--bibliography=input_files/$BIBLIOGRAPHY"
 fi
 
-if [ -z $TITLE_TEX ]
-then
-    TITLE_TEX=
-else
+if [ -n "$TITLE_TEX" ]; then
     TITLE_TEX="--include-before-body=input_files/$TITLE_TEX"
 fi
 
-if [ $VERBOSE -ge 1 ]
-then
-    VERBOSE=--verbose
+if [ $VERBOSE -ge 1 ]; then
+    VERBOSE="--verbose"
 else
-    VERBOSE=
+    VERBOSE=""
 fi
 
-if [ $USE_CHAPTER_DIVISION -ge 1 ]
-then
+if [ $USE_CHAPTER_DIVISION -ge 1 ]; then
     MAP_ARG=reporttype:extreport
     LEVEL_DIVISION=chapter
 else
@@ -88,9 +74,17 @@ else
     LEVEL_DIVISION=section
 fi
 
-
-docker run --rm -v @install_path@:/data -v `pwd`:/data/input_files vangaa/ms-fonts-pandoc:latest input_files/$MD_FILE \
-    --filter pandoc-citeproc --top-level-division=$LEVEL_DIVISION -M $MAP_ARG -o "input_files/$OUT_PDF" \
+docker run --rm \
+  -v "$(pwd)":/home/pandocuser/data \
+  -v "$(pwd)"/input_files:/home/pandocuser/data/input_files \
+  local/dstu-pandoc input_files/$MD_FILE \
+    --citeproc \
+    --top-level-division=$LEVEL_DIVISION \
+    -M $MAP_ARG \
+    -o "input_files/$OUT_PDF" \
     --from markdown+table_captions+multiline_tables+header_attributes+fancy_lists \
-    --listings --template template.tex --latex-engine=xelatex --csl=dstu-references.csl \
+    --listings \
+    --template template.tex \
+    --pdf-engine=xelatex \
+    --csl=dstu-references.csl \
     $TITLE_TEX $BIBLIOGRAPHY $VERBOSE

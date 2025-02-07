@@ -3,7 +3,7 @@
 
 % шрифты
 \usepackage{fontspec}
-\usepackage[T2A]{fontenc}
+% \usepackage[T2A]{fontenc}
 \usepackage{cmap}
 
 % цвета
@@ -13,11 +13,15 @@
 \defaultfontfeatures{Ligatures=TeX}
 \setmainfont{Times New Roman}
 \newfontfamily\cyrillicfont{Times New Roman}
-\setmonofont{FreeMono} % Моноширинный шрифт для оформления кода
+\setmonofont{DejaVu Sans Mono} % Моноширинный шрифт для оформления кода
 
 % фичи для украинского языка
 \usepackage{polyglossia}
-\setmainlanguage{ukrainian}
+\makeatletter
+\@ifundefined{ukranian@asbuk@alph}{%
+  \newcommand{\ukranian@asbuk@alph}[1]{\asbuk{#1}}%
+}{}
+\makeatother
 
 % размеры страницы
 \usepackage{geometry}
@@ -112,7 +116,11 @@
 % заголовки
 \usepackage{titlesec}
 
-
+\newlength{\cslhangindent}
+\newenvironment{CSLReferences}[2][\cslhangindent]{%
+  \setlength{\parindent}{0pt}%
+  \everypar{\setlength{\hangindent}{#1}}%
+}{\par}
 
 \expandafter\ifstrequal\expandafter{$reporttype$}{extreport} {
     \titleformat{\chapter}

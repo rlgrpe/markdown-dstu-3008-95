@@ -4,13 +4,13 @@
 ## Установка
 
 ```bash
-$ docker pull vangaa/ms-fonts-pandoc:latest # (осторожно, 3.32GB)
+docker build -t local/dstu-pandoc .
 
-$ git clone https://github.com/vangaa/markdown-dstu-3008-95
-$ cd markdown-dstu-3008-95
-$ chmod +x install.sh && ./install.sh
+git clone https://github.com/vangaa/markdown-dstu-3008-95
+cd markdown-dstu-3008-95
+chmod +x install.sh && ./install.sh
 
-$ ~/.markdown-dstu-builder/md2dstu -h
+~/.markdown-dstu-builder/md2dstu -h
 ```
 
 ## Примеры страниц
